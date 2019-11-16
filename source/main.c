@@ -3,13 +3,11 @@
  * @brief   Application entry point.
  */
 
-#include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
 #include "pin_mux.h"
 #include "clock_config.h"
 #include "MKL25Z4.h"
-#include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
