@@ -34,7 +34,7 @@
  * If you cannot obtain a copy of the License, please contact the
  * author.
  */
-#include <stdio.h>
+#include "uart.h"
 #include <stdlib.h>
 #include "System.h"
 
@@ -88,5 +88,5 @@ void System_WriteString(char * msg)
 
 void System_WriteInt(int n)
 {
-	printf("%i", n);
+	printf("%d", n);
 }

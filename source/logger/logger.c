@@ -65,21 +65,21 @@ void Log_Write(const char* function_name, message_type_t message_type, const cha
 	switch(thisLogger.Logger_Log_Level)
 	{
 	case lTest:
-		printf("Test:");
+		printf("Test:\n\r");
 		break;
 	case lDebug:
-		printf("Debug:\t");
+		printf("Debug:\n\r");
 		break;
 	case lNormal:
-		printf("Run:\t");
+		printf("Run:\n\r");
 		break;
 	}
 
-	printf("%-27s:\t\t", function_name);
+	printf("%s\n\r", function_name);
 
 
 	// Message print with color termination code
-	//vprintf(msg, args);
+	vprintf(msg, args);
 	printf("%s\n\r", end);
 }
 

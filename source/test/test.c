@@ -19,21 +19,16 @@ static inline void delay(void)
  */
 void unit_tests(void)
 {
-	UARTConfig_t uart0_config = {
+	UARTConfig_t uart_config = {
 			baud_115200,
 			parity_off,
 			single_stop_bit,
 			OSR_32,
 	};
-	UART_Init(&uart0_config);
+	UART0_Init(&uart_config);
 	UCUNIT_TestcaseBegin("Starting Test Cases\n\r");
 	UCUNIT_TestcaseBegin("Test Case for UART\n\r");
 	UCUNIT_TestcaseEnd();
-	while(1)
-	{
-		uint8_t c = getchar();
-		putchar(c);
-	}
 }
 
 /*

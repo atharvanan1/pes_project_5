@@ -1,36 +1,37 @@
-/**
- * File - uart.h
- * Author - Atharva Nandanwar
- * Email - atharva.nandanwar@colorado.edu
- * Principles of Embedded Software
- * University of Colorado Boulder
+/*
+ * uart.h
+ *
+ *  Created on: Nov 12, 2019
+ *      Author: akshh
  */
-#ifndef UART_UART_H_
-#define UART_UART_H_
-#include "MKL25Z4.h"
+
+#ifndef UART_H_
+#define UART_H_
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include "MKL25Z4.h"
 
-#define SYSCLOCK 48000000UL
+#define SYS_CLOCK               48000000UL
 
 typedef enum {
-	baud_115200,
-	baud_57600,
-	baud_38400,
-	baud_19200,
-	baud_14400,
-	baud_9600,
+	baud_115200 = 115200,
+	baud_57600 = 57600,
+	baud_38400 = 38400,
+	baud_19200 = 19200,
+	baud_14400 = 14400,
+	baud_9600 = 9600,
 } UARTBaudRate_t;
 
 typedef enum {
-	parity_off,
-	parity_even,
-	parity_odd,
+	parity_off = 0x0,
+	parity_even = 0x2,
+	parity_odd = 0x3,
 } UARTParityMode_t;
 
 typedef enum {
-	single_stop_bit,
-	double_stop_bit,
+	single_stop_bit = 0x0,
+	double_stop_bit = 0x1,
 } UARTStopBit_t;
 
 typedef enum {
@@ -73,10 +74,9 @@ typedef struct {
 	UARTOSRSetting_t osr;
 } UARTConfig_t;
 
-void UART_Init(UARTConfig_t* uart_config);
-// For testing purposes
-void putchar(uint8_t ch);
-uint8_t getchar(void);
-void printf(const char* string, ...);
+void UART0_Init(UARTConfig_t* uart_config);
 
-#endif /* UART_UART_H_ */
+//uint8_t getchar(void);
+//void putchar(uint8_t ch);
+//void printf(const char* fmt, ...);
+#endif /* UART_H_ */
