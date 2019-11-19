@@ -48,10 +48,10 @@ Compiler - gcc-arm-none-eabi
 
 There are different functionalities that can be configured in RUN and LOG mode:
 
-1. UART Non-blocking Echo Mode                   - #define ECHO_POLLING
+1. UART Non-blocking Echo Mode		- #define ECHO_POLLING
 
-2. UART Non-blocking Application Mode        - #define APP_POLLING
+2. UART Non-blocking Application Mode	- #define APP_POLLING
 
-3. UART Interrupts Echo Mode                         - #define ECHO_IRQN
+3. UART Interrupts Echo Mode		- #define ECHO_IRQN
 
-4. UART Interrupts Application Mode              - #define APP_IRQN
+4. UART Interrupts Application Mode	- #define APP_IRQN
