@@ -9,6 +9,8 @@
 
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
+
+// Include Files
 #include <stdint.h>
 
 #include "pin_mux.h"
@@ -16,11 +18,16 @@
 #include "clock_config.h"
 #include "board.h"
 
+// Includes for test functions
 #include "System.h"
 #include "uCUnit.h"
 
+// Includes for functions
 #include "logger.h"
 #include "errno.h"
 #include "uart.h"
+#include "circular_buffer.h"
+#include "led_control.h"
+#include "common.h"
 
 #endif /* TEST_TEST_H_ */

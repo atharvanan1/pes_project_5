@@ -42,7 +42,7 @@
 void System_Init(void)
 {
 
-	printf("Init of hardware finished.\n");
+	pprintf("Init of hardware finished.\n");
 }
 
 /* Stub: Shutdown your hardware here */
@@ -50,7 +50,7 @@ void System_Shutdown(void)
 {
 
 	/* asm("\tSTOP"); */
-	printf("System shutdown.\n");
+	pprintf("System shutdown.\n");
 	exit(0);
 }
 
@@ -59,7 +59,7 @@ void System_Recover(void)
 {
 	/* Stub: Recover the hardware */
 	/* asm("\tRESET"); */
-	printf("System reset.\n");
+	pprintf("System reset.\n");
 	exit(0);
 }
 
@@ -76,17 +76,17 @@ void System_Safestate(void)
 
 	/* Put processor into idle state */
 	/* asm("\tIDLE"); */
-	printf("System safe state.\n");
+	pprintf("System safe state.\n");
 	exit(0);
 }
 
 /* Stub: Transmit a string to the host/debugger/simulator */
 void System_WriteString(char * msg)
 {
-	printf(msg);
+	pprintf(msg);
 }
 
 void System_WriteInt(int n)
 {
-	printf("%d", n);
+	pprintf("%d", n);
 }

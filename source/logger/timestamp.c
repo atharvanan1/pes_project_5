@@ -8,15 +8,27 @@
 
 #include "timestamp.h"
 
+// System Clock Macro
 #define SYSCLOCK 48000000UL
 
+// Global deciseconds count
 uint32_t deciseconds = 0;
 
+/**
+ * vTimestamp_Init
+ * Sets up SysTick timer with 0.1 second
+ */
 void vTimestamp_Init(void)
 {
 	SysTick_Config(SYSCLOCK/10);
 }
 
+/**
+ * tTimestamp_Get_Timestamp
+ * Gets time stamp data
+ * @return
+ * 		returns a struct with timestamp information
+ */
 timestamp_t tTimestamp_Get_Timestamp(void)
 {
 	uint32_t temp;
@@ -30,6 +42,10 @@ timestamp_t tTimestamp_Get_Timestamp(void)
 	return currentTime;
 }
 
+/**
+ * SysTick_Handler
+ * Interrupt handler for systick interrupt
+ */
 void SysTick_Handler(void)
 {
 	deciseconds++;

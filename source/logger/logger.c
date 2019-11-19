@@ -22,11 +22,15 @@ const char* green = "\x1B[32m";
 const char* blue = "\x1B[34m";
 const char* end = "\x1B[0m";
 
-
+/**
+ * Init
+ * initializes logger by initializing timestamp
+ */
 void Init(void)
 {
 	vTimestamp_Init();
 }
+
 /*
  * Function - Log_Write
  * Brief - Prints a log message
@@ -46,18 +50,19 @@ void Log_Write(const char* function_name, message_type_t message_type, const cha
 	switch(message_type)
 	{
 	case mError:
-		printf("%s", red);
+		pprintf("%s", red);
 		break;
 	case mDebug:
-		printf("%s", blue);
+		pprintf("%s", blue);
 		break;
 	case mStatus:
-		printf("%s", green);
+		pprintf("%s", green);
 		break;
 	}
 
+	// Timestamp related routine
 	timestamp_t currentTime = tTimestamp_Get_Timestamp();
-	printf("[%02d:%02d:%02d.%d]", currentTime.hours, \
+	pprintf("[%02d:%02d:%02d.%d]", currentTime.hours, \
 			currentTime.minutes, currentTime.seconds, \
 			currentTime.deciseconds);
 
@@ -65,22 +70,23 @@ void Log_Write(const char* function_name, message_type_t message_type, const cha
 	switch(thisLogger.Logger_Log_Level)
 	{
 	case lTest:
-		printf("Test:\n\r");
+		pprintf("Test:  ");
 		break;
 	case lDebug:
-		printf("Debug:\n\r");
+		pprintf("Debug: ");
 		break;
 	case lNormal:
-		printf("Run:\n\r");
+		pprintf("Run:   ");
 		break;
 	}
 
-	printf("%s\n\r", function_name);
+	// Printing function names
+	pprintf("%-27s:\t", function_name);
 
 
 	// Message print with color termination code
-	vprintf(msg, args);
-	printf("%s\n\r", end);
+	vpprintf(msg, args);
+	pprintf("%s\n\r", end);
 }
 
 /*

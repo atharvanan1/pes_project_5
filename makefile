@@ -30,7 +30,9 @@ ARM_FLAGS := -c \
 			 -fdata-sections \
 			 -fno-builtin \
 			 -mcpu=cortex-m0plus \
-			 -mthumb
+			 -mthumb \
+			 -Wall \
+			 -Werror
 			 
 # ARM Linker Flags
 ARM_LL_FLAGS := -v \
@@ -86,7 +88,6 @@ ARM_INCS := \
 # ARM Object Files 
 ARM_OBJS := \
 		   $(DEBUG)/source/led_control/led_control.o \
-		   $(DEBUG)/source/application/application.o \
 		   $(DEBUG)/source/circular_buffer/circular_buffer.o \
 		   $(DEBUG)/source/logger/logger.o \
 		   $(DEBUG)/source/logger/errno.o \

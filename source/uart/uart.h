@@ -7,13 +7,18 @@
 
 #ifndef UART_H_
 #define UART_H_
+// Include Files
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdarg.h>
 #include "MKL25Z4.h"
+#include "common.h"
 
-#define SYS_CLOCK               48000000UL
+// Macros
+#define SYS_CLOCK	48000000UL
 
+// Enum for Baud Rate selection
 typedef enum {
 	baud_115200 = 115200,
 	baud_57600 = 57600,
@@ -23,17 +28,20 @@ typedef enum {
 	baud_9600 = 9600,
 } UARTBaudRate_t;
 
+// Enum for Parity Setup
 typedef enum {
 	parity_off = 0x0,
 	parity_even = 0x2,
 	parity_odd = 0x3,
 } UARTParityMode_t;
 
+// Enum for Stop Bit Configuration
 typedef enum {
 	single_stop_bit = 0x0,
 	double_stop_bit = 0x1,
 } UARTStopBit_t;
 
+// Enum for Oversampling Rate
 typedef enum {
 	OSR_4 = 0x03,
 	OSR_5,
@@ -67,6 +75,7 @@ typedef enum {
 
 } UARTOSRSetting_t;
 
+// Structure for UART Configuration
 typedef struct {
 	UARTBaudRate_t baud_rate;
 	UARTParityMode_t parity;
@@ -74,9 +83,28 @@ typedef struct {
 	UARTOSRSetting_t osr;
 } UARTConfig_t;
 
-void UART0_Init(UARTConfig_t* uart_config);
+// Enum for UART Status
+typedef enum {
+	TX_available,
+	TX_not_available,
+	RX_available,
+	RX_not_available,
+} UARTStatus_t;
 
-//uint8_t getchar(void);
-//void putchar(uint8_t ch);
-//void printf(const char* fmt, ...);
+// Prototype Functions
+void uart_init(UARTConfig_t* uart_config);
+UARTStatus_t uart_tx_available(void);
+void uart_tx_action(uint8_t data);
+void uart_tx(uint8_t data);
+UARTStatus_t uart_rx_check(void);
+uint8_t uart_rx_action(void);
+uint8_t uart_rx(void);
+void uart_enable_irq(void);
+
+// Prototype Functions for Print operations
+uint8_t uart_getchar(void);
+void uart_putchar(uint8_t ch);
+void vpprintf(const char* fmt, va_list args);
+void pprintf(const char* fmt, ...);
+
 #endif /* UART_H_ */

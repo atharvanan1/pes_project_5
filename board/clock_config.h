@@ -128,3 +128,4 @@ void BOARD_BootClockVLPR(void);
 #endif /* __cplusplus*/
 
 #endif /* _CLOCK_CONFIG_H_ */
+
