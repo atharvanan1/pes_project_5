@@ -173,13 +173,7 @@ run : directories $(ARM_OBJS) $(SOURCE)/main.c
 	@echo "KL25Z with logging off"
 
 #####################################################################
-# Essesntial Source Files
-$(DEBUG)/source/application/%.o: ./source/application/%.c
-	@echo 'Building file: $<'
-	@$(ARM_CC) $(ARM_FLAGS) $(ARM_DEFS) $(ARM_INCS) -MMD -MP -MF"./$(@:%.o=%.d)" -MT"./$(@:%.o=%.o)" -MT"./$(@:%.o=%.d)" -o "$@" "$<"
-	@echo 'Finished building: $<'
-	@echo ' '
-
+# Essential Source Files
 $(DEBUG)/source/circular_buffer/%.o: ./source/circular_buffer/%.c
 	@echo 'Building file: $<'
 	@$(ARM_CC) $(ARM_FLAGS) $(ARM_DEFS) $(ARM_INCS) -MMD -MP -MF"./$(@:%.o=%.d)" -MT"./$(@:%.o=%.o)" -MT"./$(@:%.o=%.d)" -o "$@" "$<"

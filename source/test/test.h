@@ -30,4 +30,7 @@
 #include "led_control.h"
 #include "common.h"
 
+void application(void);
+void print_report(uint8_t *char_array);
+
 #endif /* TEST_TEST_H_ */

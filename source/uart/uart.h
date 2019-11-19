@@ -1,9 +1,11 @@
-/*
- * uart.h
- *
- *  Created on: Nov 12, 2019
- *      Author: akshh
- */
+/**
+  * File Name 		- uart.c
+  * Description 	- contains test cases for the program
+  * Author			- Atharva Nandanwar
+  * Tools			- GNU C Compiler / ARM Compiler Toolchain
+  * Leveraged Code 	-
+  * URL				-
+  */
 
 #ifndef UART_H_
 #define UART_H_
@@ -95,11 +97,12 @@ typedef enum {
 void uart_init(UARTConfig_t* uart_config);
 UARTStatus_t uart_tx_available(void);
 void uart_tx_action(uint8_t data);
-void uart_tx(uint8_t data);
+void uart_tx(uint8_t* data);
 UARTStatus_t uart_rx_check(void);
 uint8_t uart_rx_action(void);
-uint8_t uart_rx(void);
+void uart_rx(uint8_t* data);
 void uart_enable_irq(void);
+void uart_echo(void);
 
 // Prototype Functions for Print operations
 uint8_t uart_getchar(void);

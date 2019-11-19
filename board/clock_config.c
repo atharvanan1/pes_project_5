@@ -305,4 +305,3 @@ void BOARD_BootClockVLPR(void)
     /* Set SystemCoreClock variable. */
     SystemCoreClock = BOARD_BOOTCLOCKVLPR_CORE_CLOCK;
 }
-

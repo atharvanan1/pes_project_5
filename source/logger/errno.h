@@ -13,7 +13,7 @@
 
 // Error/Event Enum
 typedef enum {
-
+	killyourself,
 }error_t;
 
 extern error_t errno;

@@ -1,11 +1,12 @@
 /**
-  * File Name 		- test.c
+  * File Name 		- uart.c
   * Description 	- contains test cases for the program
   * Author			- Atharva Nandanwar
   * Tools			- GNU C Compiler / ARM Compiler Toolchain
   * Leveraged Code 	-
   * URL				-
   */
+
 
 #include "uart.h"
 
@@ -60,6 +61,7 @@ void uart_init(UARTConfig_t* uart_config) {
     UART0->S1 &= ~UART0_S1_RDRF_MASK;
 }
 
+#if defined(APP_IRQN) || defined(ECHO_IRQN)
 /**
  * uart_enable_irq
  * Enable UART Interrupts
@@ -76,6 +78,7 @@ void uart_enable_irq(void)
 	NVIC->ICPR[0] |= 1 << (UART0_IRQn);
 	NVIC->ISER[0] |= 1 << (UART0_IRQn);
 }
+#endif
 
 /**
  * uart_tx_available
@@ -108,10 +111,10 @@ void uart_tx_action(uint8_t data)
  * @param
  * 		data - 8 bit data
  */
-void uart_tx(uint8_t data)
+void uart_tx(uint8_t* data)
 {
 	while(uart_tx_available() != TX_available);
-	uart_tx_action(data);
+	uart_tx_action(*data);
 }
 
 /**
@@ -145,37 +148,107 @@ uint8_t uart_rx_action(void)
  * @return
  * 		return 8 bit data
  */
-uint8_t uart_rx(void)
+void uart_rx(uint8_t* data)
 {
 	while(uart_rx_check() != RX_available);
-	return uart_rx_action();
+	*data = uart_rx_action();
 }
 
+#if defined(ECHO_POLLING)
 /**
  * uart_echo
  * UART Echo function
  */
 void uart_echo(void)
 {
-	uint8_t temp = uart_rx();
-	uart_tx(temp);
+	uint8_t temp = uart_getchar();
+	uart_putchar(temp);
 }
+#endif
 
+#if defined(APP_IRQN) || defined(ECHO_IRQN)
 /**
  * UART0_IRQHandler
  * UART Interrupt Service Routine
  */
 void UART0_IRQHandler(void)
 {
+	// Receive interrupt
 	if((UART0->S1 & UART0_S1_RDRF_MASK)  && (system_info.rx_ready_flag == 0))
 	{
 		system_info.rx_ready_flag = 1;
 	}
-	else if((UART0->S1 & UART0_S1_TDRE_MASK) && (system_info.tx_ready_flag == 0))
+
+	// Transmit interrupt
+	if((UART0->S1 & UART0_S1_TDRE_MASK) && (system_info.tx_ready_flag == 0))
 	{
 		system_info.tx_ready_flag = 1;
 	}
+
+	// Overrun Error Interrupt
+	if((UART0->S1 & UART0_S1_OR_MASK)  && (system_info.or_flag == 0))
+	{
+		system_info.or_flag = 1;
+	}
+
+	// Noise Error Interrupt
+	if((UART0->S1 & UART0_S1_NF_MASK) && (system_info.ne_flag == 0))
+	{
+		system_info.ne_flag = 1;
+	}
+
+	// Framing Error Interrupt
+	if((UART0->S1 & UART0_S1_FE_MASK)  && (system_info.fe_flag == 0))
+	{
+		system_info.fe_flag = 1;
+	}
+
+	// Parity Error Interrupt
+	if((UART0->S1 & UART0_S1_PF_MASK) && (system_info.pe_flag == 0))
+	{
+		system_info.pe_flag = 1;
+	}
 }
+
+void uart_event_handler(void)
+{
+	// Receive Ready Flag
+	if(system_info.rx_ready_flag)
+	{
+		system_info.rx_ready_flag = 0;
+	}
+
+	// Transmit Ready Flag
+	if(system_info.tx_ready_flag)
+	{
+		system_info.tx_ready_flag = 0;
+	}
+
+	// Overrun Error Flag
+	if(system_info.or_flag)
+	{
+		system_info.or_flag = 0;
+	}
+
+	// Noise Error Flag
+	if(system_info.ne_flag)
+	{
+		system_info.ne_flag = 0;
+	}
+
+	// Framing Error Flag
+	if(system_info.fe_flag)
+	{
+		system_info.fe_flag = 0;
+	}
+
+	// Parity Error Flag
+	if(system_info.pe_flag)
+	{
+		system_info.pe_flag = 0;
+	}
+}
+#endif
 
 /**
  * uart_putchar
@@ -185,7 +258,11 @@ void UART0_IRQHandler(void)
  */
 void uart_putchar(uint8_t ch)
 {
-	uart_tx(ch);
+#if defined(APP_POLLING) || defined(ECHO_POLLING)
+	uart_tx(&ch);
+#elif defined(APP_IRQN) || defined(ECHO_IRQN)
+
+#endif
 }
 
 /**
@@ -196,7 +273,13 @@ void uart_putchar(uint8_t ch)
  */
 uint8_t uart_getchar (void)
 {
-    return uart_rx();
+#if defined(APP_POLLING) || defined(ECHO_POLLING)
+	uint8_t temp;
+    uart_rx(&temp);
+    return temp;
+#elif defined(APP_IRQN) || defined(ECHO_IRQN)
+
+#endif
 }
 
 /**

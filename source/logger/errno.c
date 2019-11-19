@@ -21,6 +21,11 @@ const char* Get_Error_Message(error_t error)
 {
 	switch(error)
 	{
-
+	case killyourself:
+		return "";
+		break;
+	default:
+		return "";
+		break;
 	}
 }

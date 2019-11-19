@@ -1,4 +1,4 @@
-/**
+	/**
  * File - circular_buffer.c
  * Author - Atharva Nandanwar
  * Email - atharva.nandanwar@colorado.edu
@@ -145,7 +145,7 @@ CB_status_t cb_add_item(circular_buffer_t* buffer, uint8_t item)
  * @return
  * 		status of operation
  */
-CB_status_t cb_remove_item(circular_buffer_t* buffer)
+CB_status_t cb_remove_item(circular_buffer_t* buffer, uint8_t* data)
 {
 	// Flag error
 	if(buffer == NULL)
@@ -160,6 +160,7 @@ CB_status_t cb_remove_item(circular_buffer_t* buffer)
 	}
 	else
 	{
+		*data = *(buffer->tail);
 		buffer->tail += 1;
 		buffer->tail = (uint32_t) (buffer->tail - buffer->pointer) % buffer->length + buffer->pointer;
 		buffer->count -= 1;

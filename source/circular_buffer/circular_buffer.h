@@ -38,7 +38,7 @@ typedef struct {
 
 // Prototype functions
 CB_status_t cb_add_item(circular_buffer_t* buffer, uint8_t item);
-CB_status_t cb_remove_item(circular_buffer_t* buffer);
+CB_status_t cb_remove_item(circular_buffer_t* buffer, uint8_t* data);
 CB_status_t cb_check_full(circular_buffer_t* buffer);
 CB_status_t cb_check_empty(circular_buffer_t* buffer);
 CB_status_t cb_verify_init(circular_buffer_t* buffer);
