@@ -1,5 +1,5 @@
 /**
-  * File Name 		- uart.c
+  * File Name 		- uart.h
   * Description 	- contains test cases for the program
   * Author			- Atharva Nandanwar
   * Tools			- GNU C Compiler / ARM Compiler Toolchain
