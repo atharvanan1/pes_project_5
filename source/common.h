@@ -47,8 +47,8 @@ extern system_t system_info;
 /*-----------------------------*/
 /*  #define ECHO_POLLING	1  */
 /*  #define APP_POLLING		1  */
-  #define ECHO_IRQN		1
-/*  #define APP_IRQN		1  */
+/*  #define ECHO_IRQN		1  */
+	#define APP_IRQN		1
 /*-----------------------------*/
 /*|     Application Mode      |*/
 /*-----------------------------*/

@@ -20,6 +20,11 @@ system_t system_info = {
 circular_buffer_t* rx_buffer = NULL;
 circular_buffer_t* tx_buffer = NULL;
 
+application_t application_data = {
+		0,
+		NULL,
+};
+
 int main(void)
 {
 	BOARD_InitBootPins();
@@ -38,12 +43,17 @@ int main(void)
 	rx_buffer = cb_init_buffer(500);
 	tx_buffer = cb_init_buffer(500);
 
-	//logger.Log_Write(__func__, mStatus, "Starting Program");
+#if defined(APP_IRQN) || defined(APP_POLLING)
+	application_init();
+#endif
+
+	logger.Log_Write(__func__, mStatus, "Starting Program");
 	uart_enable_irq();
 	while(1)
 	{
 #if defined(APP_IRQN)
-		uart_interrupt_handler();
+		application();
+		tx_handler();
 #elif defined(ECHO_IRQN)
 		uart_echo();
 		tx_handler();
@@ -72,29 +82,36 @@ static inline void reset_array(uint8_t* char_array)
 	}
 }
 
+void application_init(void)
+{
+	application_data.char_array = (uint8_t *) malloc(128);
+	reset_array(application_data.char_array);
+}
+
 void application(void)
 {
-	// Put it somewhere else later on
-	uint8_t* char_array = NULL;
-	char_array = (uint8_t *) malloc(128);
-
-	reset_array(char_array);
-
-	uint16_t count = 0;
 	// Need to implement as it would be in main
 	// Loop this part
-	while(1)
+#if defined(APP_POLL)
+	*(application_data.char_array + uart_getchar()) += 1;
+	application_data.count++;
+	if(application_data.count % 50 == 0)
 	{
-
-		*(char_array + uart_getchar()) += 1;
-		count++;
-		if(count % 50 == 0)
+		print_report(application_data.char_array);
+		reset_array(application_data.char_array);
+	}
+#elif defined(APP_IRQN)
+	if(cb_check_empty(rx_buffer) != CB_buffer_empty)
+	{
+		*(application_data.char_array + uart_getchar()) += 1;
+		application_data.count++;
+		if(application_data.count % 50 == 0)
 		{
-			print_report(char_array);
-			reset_array(char_array);
+			print_report(application_data.char_array);
+			reset_array(application_data.char_array);
 		}
 	}
-	free(char_array);
+#endif
 }
 
 // Print report function

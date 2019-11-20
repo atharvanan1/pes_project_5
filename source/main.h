@@ -22,10 +22,19 @@
 #include "circular_buffer.h"
 
 #if defined(APP_POLLING) || defined(APP_IRQN)
+
 static inline void reset_array(uint8_t* char_array);
 void print_report(uint8_t *char_array);
+void application_init(void);
 void application(void);
+
+typedef struct {
+	uint8_t count;
+	uint8_t* char_array;
+} application_t;
+
 #endif
+
 void tx_handler(void);
 
 #endif /* MAIN_H_ */

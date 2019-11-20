@@ -104,6 +104,8 @@ uint8_t uart_rx_action(void);
 void uart_rx(uint8_t* data);
 void uart_enable_irq(void);
 void uart_echo(void);
+void uart_tx_handler(void);
+void uart_error_handler(void);
 
 // Prototype Functions for Print operations
 uint8_t uart_getchar(void);
