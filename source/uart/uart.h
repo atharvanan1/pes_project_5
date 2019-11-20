@@ -1,6 +1,6 @@
 /**
   * File Name 		- uart.h
-  * Description 	- contains test cases for the program
+  * Description 	- header for uart.c
   * Author			- Atharva Nandanwar
   * Tools			- GNU C Compiler / ARM Compiler Toolchain
   * Leveraged Code 	-

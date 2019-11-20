@@ -1,6 +1,6 @@
 /**
   * File Name 		- uart.c
-  * Description 	- contains test cases for the program
+  * Description 	- contains uart drivers
   * Author			- Atharva Nandanwar
   * Tools			- GNU C Compiler / ARM Compiler Toolchain
   * Leveraged Code 	-
