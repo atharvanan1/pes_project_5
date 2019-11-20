@@ -17,6 +17,8 @@
 #include "MKL25Z4.h"
 #include "common.h"
 #include "led_control.h"
+#include "errno.h"
+#include "logger.h"
 
 // Macros
 #define SYS_CLOCK	48000000UL

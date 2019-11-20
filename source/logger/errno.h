@@ -13,7 +13,10 @@
 
 // Error/Event Enum
 typedef enum {
-	killyourself,
+	eUART_Parity_Error = 0x2001,
+	eUART_Framing_Error = 0x2002,
+	eUART_Noise_Error = 0x2003,
+	eUART_Overrun_Error = 0x2004,
 }error_t;
 
 extern error_t errno;

@@ -11,6 +11,7 @@
 // Include files
 #include <stdint.h>
 #include "MKL25Z4.h"
+#include "logger.h"
 
 // Macros
 #define RED_LED		(0x1 << 18U)

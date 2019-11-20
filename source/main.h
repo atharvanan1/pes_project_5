@@ -35,6 +35,4 @@ typedef struct {
 
 #endif
 
-void tx_handler(void);
-
 #endif /* MAIN_H_ */

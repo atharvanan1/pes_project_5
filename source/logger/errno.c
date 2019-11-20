@@ -21,8 +21,17 @@ const char* Get_Error_Message(error_t error)
 {
 	switch(error)
 	{
-	case killyourself:
-		return "";
+	case eUART_Parity_Error:
+		return "Parity Error";
+		break;
+	case eUART_Noise_Error:
+		return "Noise Error";
+		break;
+	case eUART_Framing_Error:
+		return "Framing Error";
+		break;
+	case eUART_Overrun_Error:
+		return "Overrun Error";
 		break;
 	default:
 		return "";

@@ -141,8 +141,8 @@ all : $(EXE)
 # Selecting Platform
 ifeq ($(BUILD), TEST)
 build_option := test
-else ifeq ($(BUILD), LOG)
-build_option := log
+else ifeq ($(BUILD), DEBUG)
+build_option := debug
 else ifeq ($(BUILD), RUN)
 build_option := run
 endif
@@ -159,17 +159,17 @@ test : directories $(ARM_OBJS) $(SOURCE)/test/test.c
 
 #####################################################################
 # Rule for compiling detailed debug log
-log : directories $(ARM_OBJS) $(SOURCE)/main.c
-	@$(ARM_CC) $(ARM_FLAGS) $(ARM_DEFS) $(ARM_INCS) -DLOG $(SOURCE)/main.c -o $(DEBUG)/source/main.o
+debug : directories $(ARM_OBJS) $(SOURCE)/main.c
+	@$(ARM_CC) $(ARM_FLAGS) $(ARM_DEFS) $(ARM_INCS) -DDEBUG $(SOURCE)/main.c -o $(DEBUG)/source/main.o
 	@arm-none-eabi-gcc -nostdlib -Xlinker -Map="./Debug/pes_project_5.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m0plus -mthumb -T linkerfile.ld -o ./Debug/pes_project_5.axf $(ARM_OBJS) $(DEBUG)/source/main.o
-	@echo "KL25Z with logging on"
+	@echo "KL25Z with Debug Logging"
 
 #####################################################################
 # Rule for compiling program with normal logging	
 run : directories $(ARM_OBJS) $(SOURCE)/main.c
 	@$(ARM_CC) $(ARM_FLAGS) $(ARM_DEFS) $(ARM_INCS) -DRUN $(SOURCE)/main.c -o $(DEBUG)/source/main.o
 	@arm-none-eabi-gcc -nostdlib -Xlinker -Map="./Debug/pes_project_5.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m0plus -mthumb -T linkerfile.ld -o ./Debug/pes_project_5.axf $(ARM_OBJS) $(DEBUG)/source/main.o
-	@echo "KL25Z with logging off"
+	@echo "KL25Z with Run Configuration"
 
 #####################################################################
 # Essential Source Files

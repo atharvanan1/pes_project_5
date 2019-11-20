@@ -13,6 +13,7 @@
  */
 void LED_Init(void)
 {
+
 	// Set up clock for Port peripheral
 	SIM->SCGC5 |= SIM_SCGC5_PORTB_MASK | SIM_SCGC5_PORTD_MASK;
 

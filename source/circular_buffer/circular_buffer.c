@@ -121,6 +121,7 @@ CB_status_t cb_add_item(circular_buffer_t* buffer, uint8_t item)
 		return CB_buffer_error;
 	}
 
+	START_CRITICAL();
 	// If not full, then update parameters
 	if(cb_check_full(buffer) == CB_buffer_full)
 	{
@@ -133,6 +134,7 @@ CB_status_t cb_add_item(circular_buffer_t* buffer, uint8_t item)
 		buffer->head = (uint32_t) (buffer->head - buffer->pointer) % buffer->length + buffer->pointer;
 		buffer->count += 1;
 	}
+	END_CRITICAL();
 	return CB_buffer_operation_success;
 }
 
@@ -153,6 +155,7 @@ CB_status_t cb_remove_item(circular_buffer_t* buffer, uint8_t* data)
 		return CB_buffer_error;
 	}
 
+	START_CRITICAL();
 	// If not empty, then update parameters
 	if(cb_check_empty(buffer) == CB_buffer_empty)
 	{
@@ -165,6 +168,7 @@ CB_status_t cb_remove_item(circular_buffer_t* buffer, uint8_t* data)
 		buffer->tail = (uint32_t) (buffer->tail - buffer->pointer) % buffer->length + buffer->pointer;
 		buffer->count -= 1;
 	}
+	END_CRITICAL();
 	return CB_buffer_operation_success;
 }
 

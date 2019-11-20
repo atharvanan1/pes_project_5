@@ -15,6 +15,7 @@
  * Initializes UART Peripheral
  * @param
  * 		uart_config - pointer to uart configuration structure
+ * Leveraged Code - Alexander Dean Example
  */
 void uart_init(UARTConfig_t* uart_config) {
     uint16_t sbr;
@@ -61,6 +62,7 @@ void uart_init(UARTConfig_t* uart_config) {
     UART0->S1 &= ~UART0_S1_RDRF_MASK;
 }
 
+// Enable Interrupts only in IRQN modes
 #if defined(APP_IRQN) || defined(ECHO_IRQN)
 /**
  * uart_enable_irq
@@ -113,8 +115,10 @@ void uart_tx_action(uint8_t data)
  */
 void uart_tx(uint8_t* data)
 {
+	// Logic for polling
 #if defined(APP_POLLING) || defined(ECHO_POLLING)
 	while(uart_tx_available() != TX_available);
+	Turn_On_Only_LED(Green);
 #endif
 	uart_tx_action(*data);
 }
@@ -152,25 +156,86 @@ uint8_t uart_rx_action(void)
  */
 void uart_rx(uint8_t* data)
 {
+	// Logic for polling
 #if defined(APP_POLLING) || defined(ECHO_POLLING)
 	while(uart_rx_check() != RX_available);
+	Turn_On_Only_LED(Blue);
 #endif
 	*data = uart_rx_action();
 }
 
 /**
+ * uart_tx_handler
+ * Enables the TX Interrupt when there is data to send
+ */
+void uart_tx_handler(void)
+{
+	if(cb_check_empty(tx_buffer) == CB_buffer_not_empty)
+	{
+		UART0->C2 |= UART_C2_TIE_MASK;
+	}
+}
+
+/**
+ * uart_error_handler
+ * Handles UART errors
+ */
+void uart_error_handler(void)
+{
+	if(system_info.pe_flag)
+	{
+		errno = eUART_Parity_Error;
+		logger.Log_Write(__func__, mError, Get_Error_Message(errno));
+	    // Do a dummy read and reset receive flag
+	    __attribute__((unused)) uint8_t temp = UART0->D;
+	    UART0->S1 &= ~UART0_S1_RDRF_MASK;
+	}
+	else if(system_info.ne_flag)
+	{
+		errno = eUART_Noise_Error;
+		logger.Log_Write(__func__, mError, Get_Error_Message(errno));
+	    // Do a dummy read and reset receive flag
+	    __attribute__((unused)) uint8_t temp = UART0->D;
+	    UART0->S1 &= ~UART0_S1_RDRF_MASK;
+	}
+	else if(system_info.or_flag)
+	{
+		errno = eUART_Overrun_Error;
+		logger.Log_Write(__func__, mError, Get_Error_Message(errno));
+	    // Do a dummy read and reset receive flag
+	    __attribute__((unused)) uint8_t temp = UART0->D;
+	    UART0->S1 &= ~UART0_S1_RDRF_MASK;
+	}
+	else if(system_info.fe_flag)
+	{
+		errno = eUART_Framing_Error;
+		logger.Log_Write(__func__, mError, Get_Error_Message(errno));
+	    // Do a dummy read and reset receive flag
+	    __attribute__((unused)) uint8_t temp = UART0->D;
+	    UART0->S1 &= ~UART0_S1_RDRF_MASK;
+	}
+}
+
+/**
  * uart_echo
  * UART Echo function
+ * Works with IRQ and Polling both
  */
 void uart_echo(void)
 {
+#if defined(ECHO_POLLING)
+	uint8_t temp = uart_getchar();
+	uart_putchar(temp);
+#elif defined(ECHO_IRQN)
 	if(cb_check_empty(rx_buffer) != CB_buffer_empty)
 	{
 		uint8_t temp = uart_getchar();
 		uart_putchar(temp);
 	}
+#endif
 }
 
+// Interrupt Handler for Interrupt Based Operation
 #if defined(APP_IRQN) || defined(ECHO_IRQN)
 /**
  * UART0_IRQHandler
@@ -184,6 +249,8 @@ void UART0_IRQHandler(void)
 		uint8_t data = 0;
 		uart_rx(&data);
 		cb_add_item(rx_buffer, data);
+		UART0->S1 &= ~UART0_S1_OR_MASK;
+		Turn_On_Only_LED(Blue);
 	}
 
 	else if(UART0->S1 & UART0_S1_TDRE_MASK && UART0->C2 & UART0_C2_TIE_MASK)
@@ -195,31 +262,36 @@ void UART0_IRQHandler(void)
 			uart_tx(&data);
 			while(UART0->S1 & UART0_S1_TC_MASK);
 		}
+		Turn_On_Only_LED(Green);
 		UART0->C2 &= ~UART_C2_TIE_MASK;
 	}
 
 	// Overrun Error Interrupt
-	else if((UART0->S1 & UART0_S1_OR_MASK)  && (system_info.or_flag == 0))
+	if(UART0->S1 & UART0_S1_OR_MASK)
 	{
 		system_info.or_flag = 1;
+		Turn_On_Only_LED(Red);
 	}
 
 	// Noise Error Interrupt
-	else if((UART0->S1 & UART0_S1_NF_MASK) && (system_info.ne_flag == 0))
+	if(UART0->S1 & UART0_S1_NF_MASK)
 	{
 		system_info.ne_flag = 1;
+		Turn_On_Only_LED(Red);
 	}
 
 	// Framing Error Interrupt
-	else if((UART0->S1 & UART0_S1_FE_MASK)  && (system_info.fe_flag == 0))
+	if(UART0->S1 & UART0_S1_FE_MASK)
 	{
 		system_info.fe_flag = 1;
+		Turn_On_Only_LED(Red);
 	}
 
 	// Parity Error Interrupt
-	else if((UART0->S1 & UART0_S1_PF_MASK) && (system_info.pe_flag == 0))
+	if(UART0->S1 & UART0_S1_PF_MASK)
 	{
 		system_info.pe_flag = 1;
+		Turn_On_Only_LED(Red);
 	}
 }
 #endif
@@ -229,6 +301,7 @@ void UART0_IRQHandler(void)
  * Sends a character to UART
  * @param
  * 		ch - 8 bit character
+ * 	Works with IRQ and Polling
  */
 void uart_putchar(uint8_t ch)
 {
@@ -244,6 +317,7 @@ void uart_putchar(uint8_t ch)
  * Gets a character from UART
  * @return
  * 		return 8 bit data
+ * Works with IRQ and Polling
  */
 uint8_t uart_getchar (void)
 {

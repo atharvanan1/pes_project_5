@@ -631,10 +631,10 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="all BUILD=LOG" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="all BUILD=DEBUG" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
 				<buildArguments>-r -j12</buildArguments>
-				<buildTarget>all BUILD=LOG</buildTarget>
+				<buildTarget>all BUILD=DEBUG</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
