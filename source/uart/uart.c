@@ -69,7 +69,7 @@ void uart_init(UARTConfig_t* uart_config) {
 void uart_enable_irq(void)
 {
 	// Enable Interrupts
-	UART0->C2 |= UART_C2_TIE(1) | UART_C2_RIE(1);
+	UART0->C2 |= UART_C2_RIE(1);
 
     // Set up C3 register for error based interrupts
     UART0->C3 |= UART_C3_ORIE(1) | UART_C3_NEIE(1) | UART_C3_FEIE(1) | UART_C3_PEIE(1);
@@ -113,7 +113,9 @@ void uart_tx_action(uint8_t data)
  */
 void uart_tx(uint8_t* data)
 {
+#if defined(APP_POLLING) || defined(ECHO_POLLING)
 	while(uart_tx_available() != TX_available);
+#endif
 	uart_tx_action(*data);
 }
 
@@ -150,21 +152,24 @@ uint8_t uart_rx_action(void)
  */
 void uart_rx(uint8_t* data)
 {
+#if defined(APP_POLLING) || defined(ECHO_POLLING)
 	while(uart_rx_check() != RX_available);
+#endif
 	*data = uart_rx_action();
 }
 
-#if defined(ECHO_POLLING)
 /**
  * uart_echo
  * UART Echo function
  */
 void uart_echo(void)
 {
-	uint8_t temp = uart_getchar();
-	uart_putchar(temp);
+	if(cb_check_empty(rx_buffer) != CB_buffer_empty)
+	{
+		uint8_t temp = uart_getchar();
+		uart_putchar(temp);
+	}
 }
-#endif
 
 #if defined(APP_IRQN) || defined(ECHO_IRQN)
 /**
@@ -174,78 +179,47 @@ void uart_echo(void)
 void UART0_IRQHandler(void)
 {
 	// Receive interrupt
-	if((UART0->S1 & UART0_S1_RDRF_MASK)  && (system_info.rx_ready_flag == 0))
+	if(UART0->S1 & UART0_S1_RDRF_MASK && UART0->C2 & UART0_C2_RIE_MASK)
 	{
-		system_info.rx_ready_flag = 1;
+		uint8_t data = 0;
+		uart_rx(&data);
+		cb_add_item(rx_buffer, data);
 	}
 
-	// Transmit interrupt
-	if((UART0->S1 & UART0_S1_TDRE_MASK) && (system_info.tx_ready_flag == 0))
+	else if(UART0->S1 & UART0_S1_TDRE_MASK && UART0->C2 & UART0_C2_TIE_MASK)
 	{
-		system_info.tx_ready_flag = 1;
+		uint8_t data = 0;
+		uint8_t x = cb_remove_item(tx_buffer, &data);
+		if(x != CB_buffer_empty)
+		{
+			uart_tx(&data);
+			while(UART0->S1 & UART0_S1_TC_MASK);
+		}
+		UART0->C2 &= ~UART_C2_TIE_MASK;
 	}
 
 	// Overrun Error Interrupt
-	if((UART0->S1 & UART0_S1_OR_MASK)  && (system_info.or_flag == 0))
+	else if((UART0->S1 & UART0_S1_OR_MASK)  && (system_info.or_flag == 0))
 	{
 		system_info.or_flag = 1;
 	}
 
 	// Noise Error Interrupt
-	if((UART0->S1 & UART0_S1_NF_MASK) && (system_info.ne_flag == 0))
+	else if((UART0->S1 & UART0_S1_NF_MASK) && (system_info.ne_flag == 0))
 	{
 		system_info.ne_flag = 1;
 	}
 
 	// Framing Error Interrupt
-	if((UART0->S1 & UART0_S1_FE_MASK)  && (system_info.fe_flag == 0))
+	else if((UART0->S1 & UART0_S1_FE_MASK)  && (system_info.fe_flag == 0))
 	{
 		system_info.fe_flag = 1;
 	}
 
 	// Parity Error Interrupt
-	if((UART0->S1 & UART0_S1_PF_MASK) && (system_info.pe_flag == 0))
+	else if((UART0->S1 & UART0_S1_PF_MASK) && (system_info.pe_flag == 0))
 	{
 		system_info.pe_flag = 1;
-	}
-}
-
-void uart_event_handler(void)
-{
-	// Receive Ready Flag
-	if(system_info.rx_ready_flag)
-	{
-		system_info.rx_ready_flag = 0;
-	}
-
-	// Transmit Ready Flag
-	if(system_info.tx_ready_flag)
-	{
-		system_info.tx_ready_flag = 0;
-	}
-
-	// Overrun Error Flag
-	if(system_info.or_flag)
-	{
-		system_info.or_flag = 0;
-	}
-
-	// Noise Error Flag
-	if(system_info.ne_flag)
-	{
-		system_info.ne_flag = 0;
-	}
-
-	// Framing Error Flag
-	if(system_info.fe_flag)
-	{
-		system_info.fe_flag = 0;
-	}
-
-	// Parity Error Flag
-	if(system_info.pe_flag)
-	{
-		system_info.pe_flag = 0;
 	}
 }
 #endif
@@ -261,7 +235,7 @@ void uart_putchar(uint8_t ch)
 #if defined(APP_POLLING) || defined(ECHO_POLLING)
 	uart_tx(&ch);
 #elif defined(APP_IRQN) || defined(ECHO_IRQN)
-
+	cb_add_item(tx_buffer, ch);
 #endif
 }
 
@@ -273,15 +247,15 @@ void uart_putchar(uint8_t ch)
  */
 uint8_t uart_getchar (void)
 {
-#if defined(APP_POLLING) || defined(ECHO_POLLING)
 	uint8_t temp;
+#if defined(APP_POLLING) || defined(ECHO_POLLING)
     uart_rx(&temp);
-    return temp;
 #elif defined(APP_IRQN) || defined(ECHO_IRQN)
-
+    cb_remove_item(rx_buffer, &temp);
 #endif
-}
+    return temp;
 
+}
 /**
  * put_string
  * Prints string

@@ -76,7 +76,6 @@ ARM_INCS := \
 		   -I"$(SOURCE)/uart" \
 		   -I"$(SOURCE)/led_control" \
 		   -I"$(SOURCE)/logger" \
-		   -I"$(SOURCE)/application" \
 		   -I"$(SOURCE)/circular_buffer" \
 		   -I"$(SOURCE)/test" \
 		   -I"$(SOURCE)/uctest" \

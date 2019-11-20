@@ -17,6 +17,9 @@ system_t system_info = {
 		PE_FLAG_RESET
 };
 
+circular_buffer_t* rx_buffer = NULL;
+circular_buffer_t* tx_buffer = NULL;
+
 int main(void)
 {
 	BOARD_InitBootPins();
@@ -32,18 +35,31 @@ int main(void)
 	};
 	uart_init(&uart_config);
 	LED_Init();
-	logger.Log_Write(__func__, mStatus, "Starting Program");
+	rx_buffer = cb_init_buffer(500);
+	tx_buffer = cb_init_buffer(500);
+
+	//logger.Log_Write(__func__, mStatus, "Starting Program");
+	uart_enable_irq();
 	while(1)
 	{
 #if defined(APP_IRQN)
 		uart_interrupt_handler();
 #elif defined(ECHO_IRQN)
 		uart_echo();
+		tx_handler();
 #elif defined(APP_POLLING)
 		application();
 #elif defined(ECHO_POLLING)
 		uart_echo();
 #endif
+	}
+}
+
+void tx_handler(void)
+{
+	if(cb_check_empty(tx_buffer) == CB_buffer_not_empty)
+	{
+		UART0->C2 |= UART_C2_TIE_MASK;
 	}
 }
 

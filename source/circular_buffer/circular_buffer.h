@@ -12,7 +12,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "MKL25Z4.h"
-#include "common.h"
+
+// Macros for Critical Section
+#define START_CRITICAL() 	__disable_irq()
+#define END_CRITICAL() 		__enable_irq()
 
 // Enum for status
 typedef enum {

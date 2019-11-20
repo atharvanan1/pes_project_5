@@ -26,5 +26,6 @@ static inline void reset_array(uint8_t* char_array);
 void print_report(uint8_t *char_array);
 void application(void);
 #endif
+void tx_handler(void);
 
 #endif /* MAIN_H_ */

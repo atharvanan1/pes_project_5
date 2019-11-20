@@ -12,10 +12,12 @@
 // Include Files
 #include <stdint.h>
 #include "MKL25Z4.h"
+#include "circular_buffer.h"
 
-// Macros for Critical Section
-#define START_CRITICAL() 	UART0->C2 &= ~(UART_C2_TIE_MASK | UART_C2_RIE_MASK)
-#define END_CRITICAL() 		UART0->C2 |= UART_C2_TIE(1) | UART_C2_RIE(1)
+// RX and TX buffer globally available
+extern circular_buffer_t* rx_buffer;
+extern circular_buffer_t* tx_buffer;
+
 
 // Structure to hold system status
 typedef struct {
@@ -38,12 +40,14 @@ typedef struct {
 // Extern for system_info global variable
 extern system_t system_info;
 
+
+
 /*-----------------------------*/
 /*|     Application Mode      |*/
 /*-----------------------------*/
 /*  #define ECHO_POLLING	1  */
-#define APP_POLLING		1
-/*  #define ECHO_IRQN		1  */
+/*  #define APP_POLLING		1  */
+  #define ECHO_IRQN		1
 /*  #define APP_IRQN		1  */
 /*-----------------------------*/
 /*|     Application Mode      |*/
